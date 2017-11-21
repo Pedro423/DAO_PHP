@@ -35,9 +35,15 @@ require_once('./config.php');
 //echo $aluno;
 
 // Fazendo UPDATE dos dados passando os novos valores por parametro
-$user = new Usuario(); // Criação do OBJ para utilizar o metodo update
-$user->loadById(10); // Carregando o id do usuário que será atualizado
-$user->update("Daniela", "112233"); // Chamando o metodo update e passando os novos valores por parametro
+//$user = new Usuario(); // Criação do OBJ para utilizar o metodo update
+//$user->loadById(10); // Carregando o id do usuário que será atualizado
+//$user->update("Daniela", "112233"); // Chamando o metodo update e passando os novos valores por parametro
+//echo $user;
+
+// Apagando o usuario carregado pelo metodo loadById
+$user = new Usuario();
+$user->loadById(28);
+$user->delete();
 echo $user;
 
 

@@ -114,6 +114,15 @@ class Usuario {
         ));
     }
     
+    // Metodo DELETE
+    public function delete() {
+        $sql = new Sql();
+        $sql->query("DELETE FROM tb_usuario WHERE id = :ID", array(
+            ":ID"=>$this->getIdusuario()
+        ));
+    }
+
+
     // Este construtor já seta os valores de login e senha assim que a classe é instancida
     public function __construct($login = "", $senha = "") { // Caso não seja passado parametros, serão passados os valores vazios.
         $this->setDeslogin($login);
