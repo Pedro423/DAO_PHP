@@ -13,21 +13,18 @@ class Usuario {
     public function setIdusuario($id) {
         $this->idusuario = $id;
     }
-    
     public function getDeslogin() {
         return $this->deslogin;
     }
     public function setDeslogin($login) {
         $this->deslogin = $login;
     }
-    
     public function getDessenha() {
         return $this->dessenha;
     }
     public function setDessenha($senha) {
         $this->dessenha = $senha;
     }
-    
     public function getDtcadastro() {
         return $this->dtcadastro;
     }
@@ -43,12 +40,7 @@ class Usuario {
             ":ID"=>$id
         ));
         if(count($resultado) > 0) {
-            $row = $resultado[0];
-            
-            $this->setIdusuario($row['id']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new DateTime($row['dtcadastro']));
+            $this->setData($resultado[0]);
         }
     }
     
@@ -74,18 +66,21 @@ class Usuario {
             ":SENHA"=>$pass
         ));
         if(count($resultado) > 0) {
-            $row = $resultado[0];
-            
-            $this->setIdusuario($row['id']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new DateTime($row['dtcadastro']));
+            $this->setData($resultado[0]);
         } else {
             throw new Exception("Erro ao processar a requisição", 100);
         }
     }
+    
+    // Metodo que popula os atributos
+    public function setData($data) {
+        $this->setIdusuario($data['id']);
+        $this->setDeslogin($data['deslogin']);
+        $this->setDessenha($data['dessenha']);
+        $this->setDtcadastro(new DateTime($data['dtcadastro']));
+    }
 
-    // Metodo toString
+    // Metodo toString | Devolve um Json Array quando é dado um echo no OBJ
     public function __toString() {
         return json_encode(array(
             "id"=> $this->getIdusuario(),
@@ -93,5 +88,35 @@ class Usuario {
             "dessenha"=> $this->getDessenha(),
             "dtcadastro"=> $this->getDtcadastro()->format("d/m/Y")
         ));
+    }
+    
+    // Metodo de INSERT
+    public function insert() {
+        $sql = new Sql();
+        $resultado = $sql->select("CALL sp_usuario_insert(:LOGIN, :SENHA)", array(
+            ":LOGIN"=> $this->getDeslogin(),
+            ":SENHA"=> $this->getDessenha()
+        ));
+        if(count($resultado) > 0) {
+            $this->setData($resultado[0]);
+        }
+    }
+    
+    // Metodo update
+    public function update($login, $pass) {
+        $this->setDeslogin($login);
+        $this->setDessenha($pass);
+        $sql = new Sql();
+        $sql->query("UPDATE tb_usuario SET deslogin = :LOGIN, dessenha = :SENHA WHERE id = :ID", array(
+            ":LOGIN"=> $this->getDeslogin(),
+            ":SENHA"=> $this->getDessenha(),
+            ":ID"=> $this->getIdusuario()
+        ));
+    }
+    
+    // Este construtor já seta os valores de login e senha assim que a classe é instancida
+    public function __construct($login = "", $senha = "") { // Caso não seja passado parametros, serão passados os valores vazios.
+        $this->setDeslogin($login);
+        $this->setDessenha($senha);
     }
 }
