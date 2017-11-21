@@ -52,6 +52,39 @@ class Usuario {
         }
     }
     
+    // Busca uma lista de usuarios
+    public static function getList() {
+        $sql = new Sql();
+        return $sql->select("SELECT * FROM tb_usuario ORDER BY id ASC");
+    }
+    
+    // Search for login
+    public static function search($login) {
+        $sql = new Sql();
+        return $sql->select("SELECT * FROM tb_usuario WHERE deslogin LIKE :SEARCH ORDER BY deslogin", array(
+            ':SEARCH'=>"%".$login."%"
+        ));
+    }
+    
+    // Traz um usuario baseado no login e senha
+    public function login($login, $pass) {
+        $sql = new Sql();
+        $resultado = $sql->select("SELECT * FROM tb_usuario WHERE deslogin = :LOGIN AND dessenha = :SENHA", array(
+            ":LOGIN"=>$login,
+            ":SENHA"=>$pass
+        ));
+        if(count($resultado) > 0) {
+            $row = $resultado[0];
+            
+            $this->setIdusuario($row['id']);
+            $this->setDeslogin($row['deslogin']);
+            $this->setDessenha($row['dessenha']);
+            $this->setDtcadastro(new DateTime($row['dtcadastro']));
+        } else {
+            throw new Exception("Erro ao processar a requisição", 100);
+        }
+    }
+
     // Metodo toString
     public function __toString() {
         return json_encode(array(
